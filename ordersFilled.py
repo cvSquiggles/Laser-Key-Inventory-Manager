@@ -4,6 +4,7 @@
 from datetime import datetime
 import pyodbc
 import sys
+import subprocess as sp
 
 DBNAME = "laserInv"
 
@@ -22,17 +23,24 @@ try:
     u_orderNum = input('Order #:')
     u_keyNum = input('Key # used:')
     u_keysUsed = input('# of keys lased:')
+    #Clear the shell
+    tmp = sp.call('clear',shell=True)
     #Display info and have user confirm if it's correct before committing
     while confirmed != "yes":
-        print( "{} - {} - {} ---- {}".format(
+        print("-" * 70)
+        print( "{} \n Order #: {} \n Key #: {} \n # of keys lased: {}".format(
             u_date, u_orderNum, u_keyNum, u_keysUsed))
+        print("-" * 70)
         confirmed = input("Is the information above correct?")
         #If yes then insert this information into the database
         if confirmed == "yes":
+            #Clear the shell
+            tmp = sp.call('clear',shell=True)
             #Convert some of the user input values to int
             u_keyNum = int(u_keyNum)
             u_keysUsed = int(u_keysUsed)
             #connect to db
+            print('Connecting to database...')
             db = pyodbc.connect(Driver='{SQL Server Native Client 11.0}',
                         Server='(LocalDB)\\LocalDB Laser',
                         Database='laserInv',
@@ -42,19 +50,23 @@ try:
             c1 = db.cursor()
             c1.execute("SELECT invCount FROM keyInventoryTEST WHERE keyNum = '%s'" % u_keyNum)
             try: 
+            #Check to see if cursor one has A result.
                 u_preCount = (c1.fetchall()[0][0])
             except IndexError:
                 print("-" * 70)
                 print("ERROR: The key number you entered doesn't exist in the keyInventory table.")
                 print("TIP: If you know you've typed it correctly, you'll have to add it to the Database with newKey.py") 
-            #Grab datetime for this commit
-            finally:
+                print("-" * 70)
                 if openConn == True:
                     db.close()
                     openConn = False
-                openConn = False
                 sys.exit()
-
+            except Exception:
+                if openConn == True:
+                    db.close()
+                    openConn = False
+                sys.exit()
+            #Grab datetime for this commit
             u_date = datetime.now()
             #Calculate postCount
             u_postCount = u_preCount - u_keysUsed
@@ -66,19 +78,24 @@ try:
             c3 = db.cursor()
             c3.execute("UPDATE keyInventoryTEST SET invCount = ? WHERE keyNum = ?", (u_postCount, u_keyNum))
             c3.commit()
+            tmp = sp.call('clear',shell=True)
+            print('Success! Database has been updated.')
         #If no prompt them to re-enter the information properly
         elif confirmed == "no":
-            u_orderNum = input('Order #:')
+            #Clear the shell
+            tmp = sp.call('clear',shell=True)
+            u_orderNum = input('Re-enter the information. \n Order #:')
             u_keyNum = input('Key # used:')
             u_keysUsed = input('# of keys lased:')
         #If they enter anything other than yes or no, ask again
         else:
-            print("Must answer yes or no.")
+            #Clear the shell
+            tmp = sp.call('clear',shell=True)
+            print("Must answer yes or no. All lowercase!")
 except Exception:
 	raise
 finally:
     if openConn == True:
         db.close()
         openConn = False
-    print('Fin')
     sys.exit()
