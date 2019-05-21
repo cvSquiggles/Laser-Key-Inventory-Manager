@@ -8,6 +8,6 @@ x Insure user input u_keyNum has a corresponding value in keyInventory table.
 
 - Create script that scans DB for all keys with an inventory count LOWER than the avg amount ordered in a month order by avg order size.
 
-Bugs:
+Known Bugs:
 
-- If user input fails to convert to int, the program just runs the finally sequence as if nothing went wrong, but nothing happens. (tsql.py line 33, 34)
+

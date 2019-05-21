@@ -8,6 +8,8 @@ import subprocess as sp
 
 DBNAME = "laserInv"
 
+#This variable is used throughout the code to track wether the connection is still
+#open, and generally that check will close it and set to false if it is.
 openConn = False
 
 #pullQuery = "SELECT invCount FROM keyInventory WHERE keyNum = '{u_keyNum}'"
@@ -15,8 +17,6 @@ openConn = False
 #insertQuery = "INSERT INTO ordersFilled ('time', 'orderNum', 'keyNum', 'keysUsed', 'preCount', 'postCount') VALUES ('')"
 
 confirmed = None
-
-u_date = datetime.now()
 
 try:
     #Taking order info from user
@@ -42,9 +42,9 @@ try:
             #connect to db
             print('Connecting to database...')
             db = pyodbc.connect(Driver='{SQL Server Native Client 11.0}',
-                        Server='(LocalDB)\\LocalDB Laser',
-                        Database='laserInv',
-                        trusted_connection='yes')
+                                Server='(LocalDB)\\LocalDB Laser',
+                                Database=DBNAME,
+                                trusted_connection='yes')
             openConn = True
             #cursor 1 to get preCount value
             c1 = db.cursor()
@@ -62,6 +62,7 @@ try:
                     openConn = False
                 sys.exit()
             except Exception:
+                raise
                 if openConn == True:
                     db.close()
                     openConn = False
