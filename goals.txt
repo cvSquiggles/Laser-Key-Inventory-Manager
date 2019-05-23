@@ -2,9 +2,11 @@ Goals:
 
 - Clean up user input.
 
+- Clean console output for readability.
+
 x Insure user input u_keyNum has a corresponding value in keyInventory table.
 
-- Create resupply script.
+x Create resupply script.
 
 - Create script that scans DB for all keys with an inventory count LOWER than the avg amount ordered in a month order by avg order size.
 

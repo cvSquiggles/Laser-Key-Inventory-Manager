@@ -8,7 +8,7 @@ import subprocess as sp
 from os import system
 
 def clear():
-    system('clear')
+    system('cls')
 
 DBNAME = "laserInv"
 

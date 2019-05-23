@@ -7,7 +7,7 @@ from os import system
 u_Action = None
 
 def clear():
-    system('clear')
+    system('cls')
 
 clear()
 print("Welcome to the Laser key inventory! :D")
