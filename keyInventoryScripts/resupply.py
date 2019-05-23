@@ -5,6 +5,10 @@ from datetime import datetime
 import pyodbc
 import sys
 import subprocess as sp
+from os import system
+
+def clear():
+    system('clear')
 
 DBNAME = "laserInv"
 
@@ -24,30 +28,26 @@ addMore = None
 #If encapsulates the code, re-runs it if you say you want to enter more resupply info.
 while resupplyComplete == False:
     try:
-        #Take resupply info from the user
-        tmp = sp.call('clear',shell=True)
+        clear()
         print('Update the key inventory by entering the key resupply info below.')
         u_keyNum = input('Key # used (i.e. Key #29): #')
         u_keysAdded = input('# of keys to add to inventory: ')
-        #Clear the shell
-        tmp = sp.call('clear',shell=True)
+        clear()
         while confirmed != "yes":
             print("-" * 70)
-            print( "Adding {} key {}'s to the inventory. \n Is this correct?".format(u_keysAdded, u_keyNum))
+            print( "Adding {} key {}'s to the inventory. \nIs this correct?".format(u_keysAdded, u_keyNum))
             print("-" * 70)
             confirmed = input('Please enter ''yes'' or ''no'': ')
             if confirmed == "yes":
                 #Do nothing
-                print('Great!')
+                clear()
             elif confirmed == "no":
-                #Clear the shell
-                tmp = sp.call('clear',shell=True)
+                clear()
                 print('Re-enter the information.')
                 u_keyNum = input('Key # used (i.e. Key #29): #')
                 u_keysAdded = input('# of keys to add to inventory:')
             else:
-                #Cle1ar the shell
-                tmp = sp.call('clear',shell=True)
+                clear()
                 print("Must answer yes or no, it's case sensitive because I'm lazy!")
         #If yes then proceed to insert this information into the database
         #First reset confirmed status in case user adds more keys later.
@@ -98,6 +98,7 @@ while resupplyComplete == False:
         c3.execute("UPDATE keyInventory SET invCount = ? WHERE keyNum = ?", (u_postCount, u_keyNum))
         c3.commit()
         print('Success! Database has been updated.')
+        print('-' * 70)
         addMore = None
         while addMore != "yes" and addMore != "no": 
             addMore = input('Would you like to add more keys to the inventory? ')
@@ -110,8 +111,7 @@ while resupplyComplete == False:
                 resupplyComplete = True;
                 print('Okay, bye!')
             else:
-                #Clear the shell
-                tmp = sp.call('clear',shell=True)
+                clear()
                 print("Must answer yes or no, it's case sensitive because I'm lazy!")
     except Exception:
         raise

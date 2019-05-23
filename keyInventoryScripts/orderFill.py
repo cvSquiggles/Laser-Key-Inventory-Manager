@@ -5,6 +5,10 @@ from datetime import datetime
 import pyodbc
 import sys
 import subprocess as sp
+from os import system
+
+def clear():
+    system('clear')
 
 DBNAME = "laserInv"
 
@@ -31,16 +35,15 @@ u_date = datetime.now()
 while orderComplete == False:
     try:
         #Taking order info from user
-        #Clear the shell
-        tmp = sp.call('clear',shell=True)
+        clear()
         while confirmed != "yes":
             print('Update the key inventory by entering the order information below.')
+            print('-' * 70)
             if multiKeyOrder == False:
                 u_orderNum = input('Order #: ')
             u_keyNum = input('Key used (i.e. #29): #')
             u_keysUsed = input('# of keys lased: ')
-            #Clear the shell
-            tmp = sp.call('clear',shell=True)
+            clear()
             #Display info and have user confirm if it's correct before committing
             print("-" * 70)
             print( "{} \n Order #: {} \n Key #: {} \n # of keys lased: {}".format(
@@ -49,18 +52,15 @@ while orderComplete == False:
             confirmed = input("Is the information above correct? ")
             #If yes then insert this information into the database
             if confirmed == "yes":
-                #Clear the shell
-                tmp = sp.call('clear',shell=True)
+                clear()
             #If no prompt them to re-enter the information properly
             elif confirmed == "no":
-                #Clear the shell
-                tmp = sp.call('clear',shell=True)
-                print('Re-enter the information.')
+                clear()
+                print('Re-enter the information. \n')
             #If they enter anything other than yes or no, ask again
             else:
-                #Clear the shell
-                tmp = sp.call('clear',shell=True)
-                print("Must answer yes or no, it's case sensitive because I'm lazy!")
+                clear()
+                print("Must answer yes or no, it's case sensitive because I'm lazy! \n")
         #Reset confirmed for future while loops
         confirmed = "No"
         #Convert some of the user input values to int
@@ -105,7 +105,7 @@ while orderComplete == False:
         c3 = db.cursor()
         c3.execute("UPDATE keyInventory SET invCount = ? WHERE keyNum = ?", (u_postCount, u_keyNum))
         c3.commit()
-        tmp = sp.call('clear',shell=True)
+        clear()
         print('Success! Database has been updated.')
         addMore = None
         #While loop to ask user if they want to remove more keys from inventory
@@ -121,8 +121,7 @@ while orderComplete == False:
                 orderComplete = True
                 print('Okay, bye!')
             else:
-                #Clear the shell
-                tmp = sp.call('clear',shell=True)
+                clear()
                 print("Must answer yes or no, it's case sensitive because I'm lazy!")
     except Exception:
     	raise
