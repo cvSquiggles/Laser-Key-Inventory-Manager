@@ -21,10 +21,19 @@ while u_Action != 'Fill order' and u_Action != 'Resupply' and u_Action != 'fill 
         import orderFill
     elif u_Action == 'Resupply' or u_Action == 'resupply' or u_Action == 'RESUPPLY':
         import resupply
-    elif u_Action == 'quit':
+    elif u_Action == 'quit' or u_Action == 'QUIT':
         clear()
         sys.exit()
+    elif u_Action == 'help' or u_Action == 'HELP' or u_Action == 'Help':
+    	clear()
+    	divider()
+    	print('Command Guide:\n\n'
+    		'Fill order: Use this to remove keys lased from inventory.\n'
+    		'\nResupply: Use this when you get new coated keys to add to inventory.')
+    	divider()
     else:
         clear()
-        print("Input not valid. If you don't know what to type, try entering, \"help\" next time.")
+        print('Input not valid.\n'
+         'TIP: If you don''t know what to type, try entering, \"help\" next time.')
+        divider()
 sys.exit()
