@@ -10,6 +10,9 @@ from os import system
 def clear():
     system('cls')
 
+def divider():
+    print('-' * 70)    
+
 DBNAME = "laserInv"
 
 #This variable is used throughout the code to track wether the connection is still
@@ -30,13 +33,14 @@ while resupplyComplete == False:
     try:
         clear()
         print('Update the key inventory by entering the key resupply info below.')
+        divider()
         u_keyNum = input('Key # used (i.e. Key #29): #')
         u_keysAdded = input('# of keys to add to inventory: ')
         clear()
         while confirmed != "yes":
-            print("-" * 70)
+            divider()
             print( "Adding {} key {}'s to the inventory. \nIs this correct?".format(u_keysAdded, u_keyNum))
-            print("-" * 70)
+            divider()
             confirmed = input('Please enter ''yes'' or ''no'': ')
             if confirmed == "yes":
                 #Do nothing
@@ -70,10 +74,10 @@ while resupplyComplete == False:
             u_preCount = (c1.fetchall()[0][0])
         except IndexError:
             #If sql select statement gets no result
-            print("-" * 70)
+            divider()
             print("ERROR: The key number you entered doesn't exist in the keyInventory table.")
             print("TIP: If you know you've typed it correctly, you'll have to add it to the Database with newKey.py") 
-            print("-" * 70)
+            divider()
             if openConn == True:
                 db.close() 
                 openConn = False
@@ -98,7 +102,7 @@ while resupplyComplete == False:
         c3.execute("UPDATE keyInventory SET invCount = ? WHERE keyNum = ?", (u_postCount, u_keyNum))
         c3.commit()
         print('Success! Database has been updated.')
-        print('-' * 70)
+        divider()
         addMore = None
         while addMore != "yes" and addMore != "no": 
             addMore = input('Would you like to add more keys to the inventory? ')

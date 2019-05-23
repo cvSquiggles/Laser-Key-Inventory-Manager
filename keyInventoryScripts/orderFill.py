@@ -10,6 +10,9 @@ from os import system
 def clear():
     system('cls')
 
+def divider():
+    print('-' * 70)    
+
 DBNAME = "laserInv"
 
 openConn = False
@@ -38,17 +41,17 @@ while orderComplete == False:
         clear()
         while confirmed != "yes":
             print('Update the key inventory by entering the order information below.')
-            print('-' * 70)
+            divider()
             if multiKeyOrder == False:
                 u_orderNum = input('Order #: ')
             u_keyNum = input('Key used (i.e. #29): #')
             u_keysUsed = input('# of keys lased: ')
             clear()
             #Display info and have user confirm if it's correct before committing
-            print("-" * 70)
+            divider()
             print( "{} \n Order #: {} \n Key #: {} \n # of keys lased: {}".format(
                 u_date, u_orderNum, u_keyNum, u_keysUsed))
-            print("-" * 70)
+            divider()
             confirmed = input("Is the information above correct? ")
             #If yes then insert this information into the database
             if confirmed == "yes":
@@ -80,10 +83,10 @@ while orderComplete == False:
             #Check to see if cursor one has A result.
             u_preCount = (c1.fetchall()[0][0])
         except IndexError:
-            print("-" * 70)
+            divider()
             print("ERROR: The key number you entered doesn't exist in the keyInventory table.")
             print("TIP: If you know you've typed it correctly, you'll have to add it to the Database with newKey.py") 
-            print("-" * 70)
+            divider()
             if openConn == True:
                 db.close()
                 openConn = False
