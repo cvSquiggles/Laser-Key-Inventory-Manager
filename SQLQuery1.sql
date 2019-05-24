@@ -1,14 +1,18 @@
 use [laserInv]
 
---DELETE FROM ordersFilled;
+--DELETE FROM ordersFilled WHERE orderNum LIKE '%; DELETE%';
 --DELETE FROM resupply;
 --DELETE FROM keyInventory;
 
+--DELETE FROM resupplyTEST WHERE preCount = '9999';
+--INSERT INTO resupplyTEST VALUES (00000000000, 1, 9999, 10, 9999)
+
+--SELECT * FROM resupply;
 --SELECT * FROM ordersFilled;
 --SELECT * FROM keyInventory JOIN ordersFilled on keyInventory.keyNum = ordersFilled.keyNum;
 --SELECT * FROM keyInventory;
 --SELECT * FROM resupply;
---UPDATE keyInventoryTEST SET invCount = '0';
+--UPDATE keyInventory SET invCount = '1574' WHERE keyNum = '1';
 --INSERT INTO keyInventory VALUES(79, 616);
 --SELECT * FROM keyInventory;
 
@@ -23,4 +27,7 @@ use [laserInv]
 
 --Initial table
 --SELECT keyNum, SUM(keysUsed) amtPerMonth, (cast(month(submit_time) as varchar) + '/' + cast(year(submit_time) as varchar)) as monat FROM ordersFilled GROUP BY keyNum, submit_time;
-SELECT a.keyNum, AVG(a.amtPerMonth) as avgPerMonth FROM (SELECT keyNum, SUM(keysUsed) amtPerMonth, (cast(month(submit_time) as varchar) + '/' + cast(year(submit_time) as varchar)) as monat FROM ordersFilled GROUP BY keyNum, submit_time) a GROUP BY keyNum;
+
+
+--The average total # of keys used per month
+--SELECT a.keyNum, AVG(a.amtPerMonth) as avgPerMonth FROM (SELECT keyNum, SUM(keysUsed) amtPerMonth, (cast(month(submit_time) as varchar) + '/' + cast(year(submit_time) as varchar)) as monat FROM ordersFilled GROUP BY keyNum, submit_time) a GROUP BY keyNum;
