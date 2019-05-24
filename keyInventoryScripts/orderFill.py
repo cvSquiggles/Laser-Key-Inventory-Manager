@@ -52,7 +52,7 @@ while orderComplete == False:
                 clear()
                 print("Must answer yes or no, it's case sensitive because I'm lazy! \n")
         #Reset confirmed for future while loops
-        confirmed = "No"
+        confirmed = "no"
         #Convert some of the user input values to int
         u_keyNum = int(u_keyNum)
         u_keysUsed = int(u_keysUsed)
@@ -107,7 +107,6 @@ while orderComplete == False:
         while addMore != "yes" and addMore != "no": 
             addMore = input('Are there more keys on this order? ')
             if addMore == 'yes':
-                #do nothing
                 multiKeyOrder = True
                 if openConn == True:
                     db.close()

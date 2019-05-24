@@ -2,7 +2,7 @@ use [laserInv]
 
 --DELETE FROM ordersFilled WHERE orderNum LIKE 'test';
 --DELETE FROM resupply;
---DELETE FROM keyInventory;
+--DELETE FROM keyInventory WHERE keyNum = '89995';
 
 --DELETE FROM resupplyTEST WHERE preCount = '9999';
 --INSERT INTO resupplyTEST VALUES (00000000000, 1, 9999, 10, 9999)
@@ -15,6 +15,8 @@ use [laserInv]
 --UPDATE keyInventory SET invCount = '1574' WHERE keyNum = '1';
 --INSERT INTO keyInventory VALUES(79, 616);
 --SELECT * FROM keyInventory;
+
+--INSERT INTO keyInventory VALUES (61, 1000);
 
 --GET AVERAGE ORDER SIZE PER KEY
 --SELECT keyNum, AVG(keysUsed) AS avgOrderSize FROM ordersFilled GROUP BY keyNum;

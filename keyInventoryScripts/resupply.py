@@ -25,7 +25,7 @@ while resupplyComplete == False:
         clear()
         print('Update the key inventory by entering the key resupply info below.')
         divider()
-        u_keyNum = input('Key # used (i.e. Key #29): #')
+        u_keyNum = input('Key # to add (i.e. Key #29): #')
         u_keysAdded = input('# of keys to add to inventory: ')
         clear()
         while confirmed != "yes":
