@@ -68,7 +68,7 @@ while resupplyComplete == False:
         openConn = True
         #cursor 1 to get preCount value
         c1 = db.cursor()
-        c1.execute("SELECT invCount FROM keyInventory WHERE keyNum = '%s'" % u_keyNum)
+        c1.execute("SELECT invCount FROM keyInventory WHERE keyNum = '%s';" % u_keyNum)
         try:
             #Check to see if cursor has A result
             u_preCount = (c1.fetchall()[0][0])
@@ -78,16 +78,20 @@ while resupplyComplete == False:
             print("ERROR: The key number you entered doesn't exist in the keyInventory table.")
             print("TIP: If you know you've typed it correctly, you'll have to add it to the Database with newKey.py") 
             divider()
+            input("Press enter to close...")
             if openConn == True:
                 db.close() 
                 openConn = False
             sys.exit()
         except Exception:
             #All other exceptions
-            raise
             if openConn == True:
                 db.close()
                 openConn = False
+            divider()
+            raise
+            divider()
+            input("Press enter to close...")
             sys.exit()
         #If Sql result DOES contain a result, get datetime for this resupply
         u_date = datetime.now()
@@ -95,11 +99,11 @@ while resupplyComplete == False:
         u_postCount = u_preCount + u_keysAdded
         #Insert the resupply information into the resupply table
         c2 = db.cursor()
-        c2.execute("INSERT INTO resupply (submit_time, keyNum, keysAdded, preCount, postCount) VALUES (?, ?, ?, ?, ?)", (u_date, u_keyNum, u_keysAdded, u_preCount, u_postCount))
+        c2.execute("INSERT INTO resupply (submit_time, keyNum, keysAdded, preCount, postCount) VALUES (?, ?, ?, ?, ?);", (u_date, u_keyNum, u_keysAdded, u_preCount, u_postCount))
         c2.commit()
         #Update the new inventory count into keyInv Table
         c3 = db.cursor()
-        c3.execute("UPDATE keyInventory SET invCount = ? WHERE keyNum = ?", (u_postCount, u_keyNum))
+        c3.execute("UPDATE keyInventory SET invCount = ? WHERE keyNum = ?;", (u_postCount, u_keyNum))
         c3.commit()
         print('Success! Database has been updated.')
         divider()
@@ -118,10 +122,13 @@ while resupplyComplete == False:
                 clear()
                 print("Must answer yes or no, it's case sensitive because I'm lazy!")
     except Exception:
-        raise
         if openConn == True:
             db.close()
             openConn = False
+        divider()
+        raise
+        divider()
+        input("Press enter to close...")
         sys.exit()
     finally:
         if openConn == True:
