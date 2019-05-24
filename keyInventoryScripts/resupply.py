@@ -68,7 +68,7 @@ while resupplyComplete == False:
         openConn = True
         #cursor 1 to get preCount value
         c1 = db.cursor()
-        c1.execute("SELECT invCount FROM keyInventory WHERE keyNum = '%s';" % u_keyNum)
+        c1.execute("SELECT invCount FROM keyInventory WHERE keyNum = '%s';" % (u_keyNum,))
         try:
             #Check to see if cursor has A result
             u_preCount = (c1.fetchall()[0][0])
@@ -99,11 +99,11 @@ while resupplyComplete == False:
         u_postCount = u_preCount + u_keysAdded
         #Insert the resupply information into the resupply table
         c2 = db.cursor()
-        c2.execute("INSERT INTO resupply (submit_time, keyNum, keysAdded, preCount, postCount) VALUES (?, ?, ?, ?, ?);", (u_date, u_keyNum, u_keysAdded, u_preCount, u_postCount))
+        c2.execute("INSERT INTO resupply (submit_time, keyNum, keysAdded, preCount, postCount) VALUES (?, ?, ?, ?, ?);", (u_date, u_keyNum, u_keysAdded, u_preCount, u_postCount,))
         c2.commit()
         #Update the new inventory count into keyInv Table
         c3 = db.cursor()
-        c3.execute("UPDATE keyInventory SET invCount = ? WHERE keyNum = ?;", (u_postCount, u_keyNum))
+        c3.execute("UPDATE keyInventory SET invCount = ? WHERE keyNum = ?;", (u_postCount, u_keyNum,))
         c3.commit()
         print('Success! Database has been updated.')
         divider()
