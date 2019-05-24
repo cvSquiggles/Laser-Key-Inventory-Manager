@@ -4,16 +4,7 @@
 from datetime import datetime
 import pyodbc
 import sys
-import subprocess as sp
-from os import system
-
-def clear():
-    system('cls')
-
-def divider():
-    print('-' * 70)    
-
-DBNAME = "laserInv"
+from utility import clear, divider, DBNAME
 
 openConn = False
 
@@ -69,7 +60,7 @@ while orderComplete == False:
         print('Connecting to database...')
         db = pyodbc.connect(Driver='{SQL Server Native Client 11.0}',
                     Server='(LocalDB)\\LocalDB Laser',
-                    Database='laserInv',
+                    Database=DBNAME,
                     trusted_connection='yes')
         openConn = True
         #cursor 1 to get preCount value

@@ -1,6 +1,6 @@
 use [laserInv]
 
---DELETE FROM ordersFilled WHERE orderNum LIKE '%; DELETE%';
+--DELETE FROM ordersFilled WHERE orderNum LIKE 'test';
 --DELETE FROM resupply;
 --DELETE FROM keyInventory;
 

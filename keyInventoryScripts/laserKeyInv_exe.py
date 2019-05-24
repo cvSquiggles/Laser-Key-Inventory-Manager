@@ -29,11 +29,12 @@ while u_Action != 'Fill order' and u_Action != 'Resupply' and u_Action != 'fill 
     	divider()
     	print('Command Guide:\n\n'
     		'Fill order: Use this to remove keys lased from inventory.\n'
-    		'\nResupply: Use this when you get new coated keys to add to inventory.')
+    		'\nResupply: Use this when you get new coated keys to add to inventory. \n'
+    		'\nQuit: Close the program. Duh!')
     	divider()
     else:
         clear()
         print('Input not valid.\n'
-         'TIP: If you don''t know what to type, try entering, \"help\" next time.')
+         'TIP: If you don''t know what to type, try entering, \"help\".')
         divider()
 sys.exit()

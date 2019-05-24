@@ -4,16 +4,7 @@
 from datetime import datetime
 import pyodbc
 import sys
-import subprocess as sp
-from os import system
-
-def clear():
-    system('cls')
-
-def divider():
-    print('-' * 70)    
-
-DBNAME = "laserInv"
+from utility import clear, divider, DBNAME
 
 #This variable is used throughout the code to track wether the connection is still
 #open, and generally that check will close it and set to false if it is.
