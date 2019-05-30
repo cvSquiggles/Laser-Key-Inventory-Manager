@@ -32,7 +32,8 @@ while u_Action != 'Fill order' and u_Action != 'Resupply' and u_Action != 'fill 
     	print('Command Guide:\n\n'
     		'Fill order: Use this to remove keys lased from inventory.\n'
     		'\nResupply: Use this when you get new coated keys to add to inventory. \n'
-    		'\nQuit: Close the program. Duh!')
+    		'\nQuit: Close the program. Duh! \n'
+            '\nAdd (new key): Use this to start tracking a new key in the database.')
     	divider()
     else:
         clear()
