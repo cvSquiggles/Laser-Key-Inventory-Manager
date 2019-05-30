@@ -24,9 +24,11 @@ while moreToAdd != False:
             print('Add a new key to the inventory by entering the key info below.')
             divider()
             u_keyNum = input('Key ID # (i.e. key #29): #')
-            #clear()
+            clear()
+            print('Add a new key to the inventory by entering the key info below.')
+            divider()
             u_invCount = input('How many {}''s do we have to start with? '.format(u_keyNum,))
-            #clear()
+            clear()
             #Display info and have user confirm if it's correct before continuing
             divider()
             print( " Create and track Key #{} starting at a inventory count of {}?".format(
@@ -35,13 +37,12 @@ while moreToAdd != False:
             confirmed = input("Are you sure the information above is correct? ")
             #If yes then insert this information into the database
             if confirmed == 'yes':
-                #clear()
-                print('great!')
+                clear()
             elif confirmed == 'no':
-               #clear()
+                clear()
                 print('Re-enter the information. \n')
             else:
-                #clear()
+                clear()
                 print("Must answer yes or no, it's case sensitive because I'm lazy! \n")
         #Reset confirmed for future runs through the loop
         confirmed = "no"
