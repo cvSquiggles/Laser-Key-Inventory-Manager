@@ -87,3 +87,63 @@ t6 AS
 SELECT keyNum, keysNeeded
 FROM t6
 GROUP BY keyNum, keysNeeded
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+--DOES ALL THE PREVIOUS QUERIES MATH, AND THEN LISTS THE KEY NUMBERS AND CORRESPONDING INVENTORY COUNTS WHERE SAID COUNT IS BELOW AVG NEEDED PER MONTH.
+;WITH t1 AS
+(
+SELECT keyNum, keysUsed, count(keysUsed) countVal
+FROM ordersFilled
+GROUP BY keyNum, keysUsed
+),
+t2 AS
+(
+SELECT keyNum, max(countVal) maxCountVal
+FROM t1
+GROUP BY keyNum
+),
+t3 AS
+(
+SELECT y.keyNum, x.keysUsed
+FROM t1 x, t2 y
+WHERE countVal = maxCountVal AND x.keyNum = y.keyNum
+),
+t4 AS
+(
+SELECT keyNum, commonOrderSize
+FROM
+(
+select keyNum, max(keysUsed) commonOrderSize
+FROM t3
+GROUP BY keyNum
+) a
+GROUP BY keyNum, commonOrderSize
+),
+t5 AS
+(
+SELECT keyNum, avg(a.entry) as avgentryPerMonth 
+FROM 
+(
+select keyNum, month(submit_time) as month, count(1) as entry
+from ordersFilled 
+group by keyNum, month(submit_time)) a 
+GROUP BY keyNum
+),
+t6 AS
+(
+ SELECT x.keyNum, (x.commonOrderSize * y.avgEntryPerMonth) as keysNeeded
+ FROM t4 x, t5 y
+ WHERE y.keyNum = x.keyNum
+ GROUP BY x.keyNum, (x.commonOrderSize * y.avgEntryPerMonth)
+),
+t7 AS
+(
+SELECT *
+FROM keyInventory
+GROUP BY keyNum, invCount
+)
+SELECT x.keyNum, x.invCount, y.keysNeeded
+FROM t7 x, t6 y
+WHERE x.keyNum = y.keyNum AND x.invCount <= y.keysNeeded
+GROUP BY x.keyNum, x.invCount, y.keysNeeded;
