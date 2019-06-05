@@ -8,60 +8,39 @@ from utility import clear, divider, DBNAME
 modeQuery = '''
 WITH t1 AS
 (
-SELECT keyNum, keysUsed, count(keysUsed) countVal
-FROM ordersFilled
-GROUP BY keyNum, keysUsed
+SELECT keyNum, keysUsed, CONVERT(CHAR(7),submit_time,120) Date
+FROM ordersFilled x
+WHERE CONVERT(CHAR(7),submit_time,120) != CONVERT(CHAR(7),GETDATE(),120)
+GROUP BY keyNum, submit_time, keysUsed
 ),
 t2 AS
 (
-SELECT keyNum, max(countVal) maxCountVal
+SELECT keyNum, SUM(keysUsed) keysUsed, Date
 FROM t1
-GROUP BY keyNum
+GROUP BY date, keyNum
 ),
 t3 AS
 (
-SELECT y.keyNum, x.keysUsed
-FROM t1 x, t2 y
-WHERE countVal = maxCountVal AND x.keyNum = y.keyNum
+SELECT keyNum, AVG(keysUsed) AvgUsedPerMonth
+FROM t2
+GROUP BY keyNum
 ),
 t4 AS
-(
-SELECT keyNum, commonOrderSize
-FROM
-(
-select keyNum, max(keysUsed) commonOrderSize
-FROM t3
-GROUP BY keyNum
-) a
-GROUP BY keyNum, commonOrderSize
-),
-t5 AS
-(
-SELECT keyNum, avg(a.entry) as avgentryPerMonth 
-FROM 
-(
-select keyNum, month(submit_time) as month, count(1) as entry
-from ordersFilled 
-group by keyNum, month(submit_time)) a 
-GROUP BY keyNum
-),
-t6 AS
-(
- SELECT x.keyNum, (x.commonOrderSize * y.avgEntryPerMonth) as keysNeeded
- FROM t4 x, t5 y
- WHERE y.keyNum = x.keyNum
- GROUP BY x.keyNum, (x.commonOrderSize * y.avgEntryPerMonth)
-),
-t7 AS
 (
 SELECT *
 FROM keyInventory
 GROUP BY keyNum, invCount
+),
+t5 AS
+(
+SELECT keyNum, MAX(submit_time) lastSubmission
+FROM ordersFilled
+GROUP BY keyNum
 )
-SELECT x.keyNum, x.invCount, y.keysNeeded
-FROM t7 x, t6 y
-WHERE x.keyNum = y.keyNum AND x.invCount <= y.keysNeeded
-GROUP BY x.keyNum, x.invCount, y.keysNeeded;
+SELECT x.keyNum, x.invCount, y.avgUsedPerMonth, z.lastSubmission
+FROM t4 x, t3 y, t5 z
+WHERE x.keyNum = y.keyNum AND x.keyNum = z.keyNum AND x.invCount <= y.avgUsedPerMonth
+GROUP BY x.keyNum, x.invCount, y.avgUsedPerMonth, z.lastSubmission;
 '''
 
 try:
@@ -74,7 +53,7 @@ try:
     c1 = db.cursor()
     c1.execute(modeQuery)
     results = c1.fetchall()
-    print(tabulate(results, headers=['Key', 'Inventory Ct.', 'Avg. per month'], tablefmt='psql'))
+    print(tabulate(results, headers=['Key #', 'Inventory ct.', 'Avg. per month', 'Date last lased'], tablefmt='psql'))
     # widths = []
     # columns = []
     # tavnit = '|'
