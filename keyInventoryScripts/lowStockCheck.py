@@ -2,6 +2,7 @@
 
 import pyodbc
 import sys
+import importlib
 from tabulate import tabulate
 from utility import clear, divider, DBNAME
 
@@ -44,6 +45,7 @@ GROUP BY x.keyNum, x.invCount, y.avgUsedPerMonth, z.lastSubmission;
 '''
 
 try:
+    clear()
     print('Connecting to database...')
     db = pyodbc.connect(Driver='{SQL Server Native Client 11.0}',
                         Server='(LocalDB)\\LocalDB Laser',
@@ -53,33 +55,14 @@ try:
     c1 = db.cursor()
     c1.execute(modeQuery)
     results = c1.fetchall()
+    clear()
     print(tabulate(results, headers=['Key #', 'Inventory ct.', 'Avg. per month', 'Date last lased'], tablefmt='psql'))
-    # widths = []
-    # columns = []
-    # tavnit = '|'
-    # separator = '+' 
-    # max_col_length = max(list(map(lambda x: len(str(x[1])), results)))
-
-    # for cd in c1.description:
-    #     widths.append(max(max_col_length, len(cd[0])))
-    #     columns.append(cd[0])
-
-    # for w in widths:
-    #     tavnit += " %-"+"%ss |" % (w,)
-    #     separator += '-'*w + '--+'
-
-    # print(separator)
-    # print(tavnit % tuple(columns))
-    # print(separator)
-    # for row in results:
-    #     #print(tavnit, row)
-    #     print(("| {:<6} |"*len(row)).format(*row))
-    # print(separator)
-    input("Press enter to continue...")
+    input("Press enter to return to previous menu...")
     db.close()
-    sys.exit()
+    clear()
+    import dbMenu
 except Exception:
     raise
-    input("Press enter to continue...")
+    input("Press enter to close...")
     db.close()
     sys.exit()
