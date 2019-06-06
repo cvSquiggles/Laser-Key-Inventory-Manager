@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 #utility functions
-from os import system  
+from os import system
+from importlib import reload
 
 #Clears the window
 def clear():
