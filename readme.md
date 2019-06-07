@@ -2,8 +2,8 @@
 This is a tool I created to automate the management of the laser coated key inventory at Depco Products Inc.
 
 ## Prerequisites
-pyodbc == 4.0.26
-tabulate == 0.8.3
+- pyodbc == 4.0.26
+- tabulate == 0.8.3
 
 ## Set-up
 1. Populate a database with the *.mdf* in dbFiles.
