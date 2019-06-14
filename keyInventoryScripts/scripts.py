@@ -128,6 +128,96 @@ def keyInvCheck():
         input("Press enter to close...")
         db.close()
 
+def orderHistory():
+    recentHistoryQuery = '''
+    SELECT * 
+    FROM ordersFilled
+    WHERE CONVERT(CHAR(7),submit_time,120) = CONVERT(CHAR(7),GETDATE(),120)
+    '''
+    orderNumHistoryQuery = '''
+    SELECT * 
+    FROM ordersFilled
+    WHERE orderNum = '{}'
+    '''
+
+    dateHistoryQuery = '''
+    SELECT * 
+    FROM ordersFilled
+    WHERE CONVERT(CHAR(7),submit_time,120) = '{}'
+    '''
+
+    try:
+        clear()
+        searchFor = None
+        searchFor = input("Enter a Year/Month(ex. '2019-05'), order number, or leave blank to pull the current months history.\n\nSearch for: ")
+        if searchFor.startswith('0') or searchFor.startswith('w') or searchFor.startswith('t'):
+            try:
+                #SEARCH FOR ORDER NUM
+                clear()
+                print('Connecting to database...')
+                db = pyodbc.connect(Driver= DVNAME,
+                                    Server= SVNAME,
+                                    Database=DBNAME,
+                                    trusted_connection='yes')        
+                c1 = db.cursor()
+                c1.execute(orderNumHistoryQuery.format(searchFor))
+                results = c1.fetchall()
+                clear()
+                print(tabulate(results, headers=['Date', 'Order #', 'Key #', 'preCount', 'keysUsed', 'postCount'], tablefmt='psql'))
+                input("Press enter to return to previous menu...")
+                db.close()
+                clear()
+            except:
+                raise
+                input("Press enter to close...")
+                db.close()
+        elif searchFor == "":
+            try:
+                clear()
+                print('Connecting to database...')
+                db = pyodbc.connect(Driver= DVNAME,
+                                    Server= SVNAME,
+                                    Database=DBNAME,
+                                    trusted_connection='yes')        
+                c1 = db.cursor()
+                c1.execute(recentHistoryQuery)
+                results = c1.fetchall()
+                clear()
+                print(tabulate(results, headers=['Date', 'Order #', 'Key #', 'preCount', 'keysUsed', 'postCount'], tablefmt='psql'))
+                input("Press enter to return to previous menu...")
+                db.close()
+                clear()
+            except:
+                raise
+                input("Press enter to close...")
+                db.close()
+        else:
+            #Search for the date entered
+            try:
+                clear()
+                print('Connecting to database...')
+                db = pyodbc.connect(Driver= DVNAME,
+                                    Server= SVNAME,
+                                    Database=DBNAME,
+                                    trusted_connection='yes')        
+                c1 = db.cursor()
+                c1.execute(dateHistoryQuery.format(searchFor))
+                results = c1.fetchall()
+                clear()
+                print(tabulate(results, headers=['Date', 'Order #', 'Key #', 'preCount', 'keysUsed', 'postCount'], tablefmt='psql'))
+                input("Press enter to return to previous menu...")
+                db.close()
+                clear()
+            except:
+                raise
+                input("Press enter to close...")
+                db.close()
+            
+    except Exception:
+        raise
+        input("Press enter to close...")
+        db.close()
+
 def lowStockCheck():
     modeQuery = '''
     WITH t1 AS
@@ -539,7 +629,7 @@ def dbMenu():
         print("Database: {}".format(DBNAME))
         divider()
         u_Action = None
-        u_Action = input("What would you like to check? \n\nOptions:  Key Inv. - Low stock keys - Key stats | Back\n \n    ")
+        u_Action = input("What would you like to check? \n\nOptions:  Key Inv. - Low stock keys - Key stats - View Orders | Back\n \n    ")
         if "Low" in u_Action or "low" in u_Action or "LOW" in u_Action:
                 lowStockCheck()
         elif "Inv" in u_Action or "inv" in u_Action or "INV" in u_Action:
@@ -559,9 +649,12 @@ def dbMenu():
                 '(Key) Inv(.): Displays all keys tracked in inventory and their current inv. count. \n'
                 '\nLow (stock keys): Use this to check which keys need to be resupplied. \n'
                 '\n(Key) Stats: Use this to view various stats for each key. \n'
+                '\nView (orders): Use this to view order history. \n'
                 '\nBack: Return to the previous menu. \n'
                 '\nQuit: Close the program. Duh! \n')
             divider()
+        elif "view" in u_Action or "View" in u_Action or "VIEW" in u_Action:
+            orderHistory()
         else:
             clear()
             print('Input not valid.\n'
