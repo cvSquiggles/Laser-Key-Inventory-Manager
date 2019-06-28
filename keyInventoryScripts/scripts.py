@@ -253,7 +253,7 @@ def lowStockCheck():
     )
     SELECT x.keyNum, x.invCount, y.avgUsedPerMonth, z.lastSubmission
     FROM t4 x, t3 y, t5 z
-    WHERE x.keyNum = y.keyNum AND x.keyNum = z.keyNum AND x.invCount <= (y.avgUsedPerMonth + 200)
+    WHERE x.keyNum = y.keyNum AND x.keyNum = z.keyNum AND x.invCount <= (y.avgUsedPerMonth + 50)
     GROUP BY x.keyNum, x.invCount, y.avgUsedPerMonth, z.lastSubmission;
     '''
 
