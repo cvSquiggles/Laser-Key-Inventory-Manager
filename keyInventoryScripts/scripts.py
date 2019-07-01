@@ -146,10 +146,18 @@ def orderHistory():
     WHERE CONVERT(CHAR(7),submit_time,120) = '{}'
     '''
 
+    keyHistoryQuery = '''
+    SELECT *
+    FROM ordersFilled
+    WHERE keyNum = '{}';
+    '''
+
     try:
         clear()
         searchFor = None
-        searchFor = input("Enter a Year/Month(ex. '2019-05'), order number, or leave blank to pull the current months history.\n\nSearch for: ")
+        print("Enter a Year/Month(ex. '2019-05'), key number(ex. 'k22'),\norder number, or leave blank to pull the current months history.")
+        divider()
+        searchFor = input("Search for:")
         if searchFor.startswith('0') or searchFor.startswith('w') or searchFor.startswith('t'):
             try:
                 #SEARCH FOR ORDER NUM
@@ -181,6 +189,28 @@ def orderHistory():
                                     trusted_connection='yes')        
                 c1 = db.cursor()
                 c1.execute(recentHistoryQuery)
+                results = c1.fetchall()
+                clear()
+                print(tabulate(results, headers=['Date', 'Order #', 'Key #', 'preCount', 'keysUsed', 'postCount'], tablefmt='psql'))
+                input("Press enter to return to previous menu...")
+                db.close()
+                clear()
+            except:
+                raise
+                input("Press enter to close...")
+                db.close()
+        elif searchFor.startswith('k') or searchFor.startswith('K'):
+            #Search for full order history of the individual key Number.
+            try:
+                searchFor = (searchFor[1:])
+                clear()
+                print('Connecting to database...')
+                db = pyodbc.connect(Driver= DVNAME,
+                                    Server= SVNAME,
+                                    Database=DBNAME,
+                                    trusted_connection='yes')        
+                c1 = db.cursor()
+                c1.execute(keyHistoryQuery.format(searchFor))
                 results = c1.fetchall()
                 clear()
                 print(tabulate(results, headers=['Date', 'Order #', 'Key #', 'preCount', 'keysUsed', 'postCount'], tablefmt='psql'))
@@ -276,6 +306,51 @@ def lowStockCheck():
         raise
         input("Press enter to close...")
         db.close()
+
+def manUpdate():
+    manualUpdateQuery = '''
+    UPDATE keyInventory
+    SET invCount = '{}'
+    WHERE keyNum = '{}'
+    '''
+    try:
+        clear()
+        confirmed = None
+        newCount = None
+        keyToUpdate = None
+        keyToUpdate = input('What key would you like to update the count for? ')
+        clear()
+        print('Connecting to database...')
+        db = pyodbc.connect(Driver= DVNAME,
+                            Server= SVNAME,
+                            Database=DBNAME,
+                            trusted_connection='yes')        
+        c1 = db.cursor()
+        c1.execute("SELECT invCount FROM keyInventory WHERE keyNum = {}".format(keyToUpdate))
+        currentCount = c1.fetchone()[0]
+        clear()
+        print("Tip: Enter a blank value to return to the main menu without changing anything.\n")
+        divider()
+        newCount = input("The current inventory count for that key is {}, what would you like to change it to? ".format(currentCount))
+        clear()
+        confirmed = input("Update key {} to {} in inventory?\n".format(keyToUpdate, newCount))
+        clear()
+        if confirmed == "YES" or confirmed == "Yes" or confirmed == "yes":
+            c2 = db.cursor()
+            c2.execute(manualUpdateQuery.format(newCount, keyToUpdate))
+            c2.commit()
+            input("Press enter to return to previous menu...")
+            db.close()
+            clear()
+        else:
+            print("Update didn't go through, you have to answer yes!")
+            db.close()
+            input("Press enter to return to main menu...")     
+    except Exception:
+        raise
+        input("Press enter to close...")
+        db.close()
+
 
 def orderFill():
     openConn = False
@@ -629,13 +704,15 @@ def dbMenu():
         print("Database: {}".format(DBNAME))
         divider()
         u_Action = None
-        u_Action = input("What would you like to check? \n\nOptions:  Key Inv. - Low stock keys - Key stats - View Orders | Back\n \n    ")
+        u_Action = input("What would you like to check? \n\nOptions:  Key Inv. - Low stock keys - Key stats - View Orders - Manual Inv Update | Back\n \n    ")
         if "Low" in u_Action or "low" in u_Action or "LOW" in u_Action:
                 lowStockCheck()
         elif "Inv" in u_Action or "inv" in u_Action or "INV" in u_Action:
                 keyInvCheck()
         elif "stats" in u_Action or "Stats" in u_Action or "STATS" in u_Action:
                 invStats()
+        elif "man" in u_Action or "MAN" in u_Action or "Man" in u_Action:
+                manUpdate()
         elif "back" in u_Action or "Back" in u_Action or "BACK" in u_Action:
             clear()
             dbMenu = False
@@ -650,6 +727,7 @@ def dbMenu():
                 '\nLow (stock keys): Use this to check which keys need to be resupplied. \n'
                 '\n(Key) Stats: Use this to view various stats for each key. \n'
                 '\nView (orders): Use this to view order history. \n'
+                '\nMan(ual Inv Update): Use this to manual update inventory count for a key without logging it as an order filled. \n'
                 '\nBack: Return to the previous menu. \n'
                 '\nQuit: Close the program. Duh! \n')
             divider()
