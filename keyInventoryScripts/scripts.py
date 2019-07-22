@@ -204,7 +204,7 @@ def orderHistory():
     keyHistoryQuery = '''
     SELECT *
     FROM ordersFilled
-    WHERE keyNum = '{}' AND orderNum != 'avgBal';
+    WHERE keyNum = '{}' AND orderNum != 'avgBal'
     '''
 
     try:
@@ -307,16 +307,16 @@ def lowStockCheck():
     modeQuery = '''
     WITH t1 AS
     (
-    SELECT keyNum, keysUsed, CONVERT(CHAR(7),submit_time,120) Date
+    SELECT keyNum, keysUsed, CONVERT(CHAR(7),submit_time,120) Dates
     FROM ordersFilled x
-    WHERE CONVERT(CHAR(7),submit_time,120) != CONVERT(CHAR(7),GETDATE(),120)
+    WHERE CONVERT(CHAR(7),submit_time,120) != CONVERT(CHAR(7),GETDATE(),120) AND orderNum != 'avgBal'
     GROUP BY keyNum, submit_time, keysUsed
     ),
     t2 AS
     (
-    SELECT keyNum, SUM(keysUsed) keysUsed, Date
+    SELECT keyNum, SUM(keysUsed) keysUsed, Dates
     FROM t1
-    GROUP BY date, keyNum
+    GROUP BY Dates, keyNum
     ),
     t3 AS
     (
@@ -334,6 +334,7 @@ def lowStockCheck():
     (
     SELECT keyNum, MAX(submit_time) lastSubmission
     FROM ordersFilled
+    WHERE orderNum != 'avgBal'
     GROUP BY keyNum
     )
     SELECT x.keyNum, x.invCount, y.avgUsedPerMonth, z.lastSubmission
