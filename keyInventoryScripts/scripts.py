@@ -7,20 +7,73 @@ from datetime import datetime
 from tabulate import tabulate
 from utility import clear, divider, DBNAME, SVNAME, DVNAME
 
+def avgBalPop():
+    insertAvgBal = '''
+    INSERT INTO ordersFilled
+    VALUES ('{}-01 13:13:13.130', 'avgBal', {}, 9999, 0, 9999);
+    '''
+
+    keyInventory = '''
+    SELECT keyNum from keyInventory;
+    '''
+
+    try:
+        clear()
+        # Connect to db
+        print('Connecting to database...')
+        db = pyodbc.connect(Driver= DVNAME,
+                            Server= SVNAME,
+                            Database=DBNAME,
+                            trusted_connection='yes')
+
+        # Get all keyNums in inventory and store in an array
+        c1 = db.cursor()
+        c1.execute(keyInventory)
+        c1results = c1.fetchall()
+
+        # Get current YYYY-MM
+        c3 = db.cursor()
+        c3.execute("SELECT CONVERT(CHAR(7),GETDATE(),120) AS YYYY_MM")
+        c3result = c3.fetchone()
+        currentYearMonth = c3result.YYYY_MM
+
+        # Check to see if avgBal orders have already been created this month
+        c4 = db.cursor()
+        c4.execute("SELECT keyNum FROM ordersFilled WHERE orderNum = 'avgBal' AND CONVERT(CHAR(7),submit_time,120) = CONVERT(CHAR(7),GETDATE(),120)")
+        c4result = c4.fetchone()
+        # if avgBal's already exist this month, do nothing
+        # otherwise, create one for every key
+        if c4result:
+            db.close()
+            clear()
+        else:
+            for i in c1results:
+                targetKey = i.keyNum
+                c2 = db.cursor()
+                c2.execute(insertAvgBal.format(currentYearMonth, targetKey))
+                c2.commit()
+            db.close()
+            clear()
+
+    except Exception:
+        raise
+        input("Press enter to close...")
+        db.close()
+
 def invStats():
     invStatsQuery = '''
     WITH t1 AS
     (
-    SELECT keyNum, keysUsed, CONVERT(CHAR(7),submit_time,120) Date
+    SELECT keyNum, keysUsed, CONVERT(CHAR(7),submit_time,120) Dates
     FROM ordersFilled
     WHERE CONVERT(CHAR(7),submit_time,120) != CONVERT(CHAR(7),GETDATE(),120)
     GROUP BY keyNum, submit_time, keysUsed
     ),
     t2 AS
     (
-    SELECT keyNum, count(keyNum) ordersPerMonth, Date
+    SELECT keyNum, (count(keyNum)-1) ordersPerMonth, Dates
     FROM t1
-    GROUP BY keyNum, Date
+    GROUP BY keyNum, Dates
     ),
     t3 AS
     (
@@ -32,12 +85,14 @@ def invStats():
     (
     SELECT keyNum, MAX(submit_time) lastSubmission
     FROM ordersFilled
+    WHERE orderNum != 'avgBal'
     GROUP BY keyNum
     ),
     t5 AS
     (
     SELECT keyNum, keysUsed, COUNT(keysUsed) countVal
     FROM ordersFilled
+    WHERE orderNum != 'avgBal'
     GROUP BY keyNum, keysUsed
     ),
     t6 AS
@@ -65,9 +120,9 @@ def invStats():
     ),
     t9 AS
     (
-    SELECT keyNum, SUM(keysUsed) totalUsed, Date
+    SELECT keyNum, SUM(keysUsed) totalUsed, Dates
     FROM t1
-    GROUP BY Date, keyNum
+    GROUP BY Dates, keyNum
     ),
     t10 AS
     (
@@ -132,24 +187,24 @@ def orderHistory():
     recentHistoryQuery = '''
     SELECT * 
     FROM ordersFilled
-    WHERE CONVERT(CHAR(7),submit_time,120) = CONVERT(CHAR(7),GETDATE(),120)
+    WHERE CONVERT(CHAR(7),submit_time,120) = CONVERT(CHAR(7),GETDATE(),120) AND orderNum != 'avgBal'
     '''
     orderNumHistoryQuery = '''
     SELECT * 
     FROM ordersFilled
-    WHERE orderNum = '{}'
+    WHERE orderNum = '{}' AND orderNum != 'avgBal'
     '''
 
     dateHistoryQuery = '''
     SELECT * 
     FROM ordersFilled
-    WHERE CONVERT(CHAR(7),submit_time,120) = '{}'
+    WHERE CONVERT(CHAR(7),submit_time,120) = '{}' AND orderNum != 'avgBal'
     '''
 
     keyHistoryQuery = '''
     SELECT *
     FROM ordersFilled
-    WHERE keyNum = '{}';
+    WHERE keyNum = '{}' AND orderNum != 'avgBal';
     '''
 
     try:

@@ -7,8 +7,11 @@ from utility import clear, divider, DBNAME
 
 u_Action = None
 
-#Set Large Window Size
+# Set Large Window Size
 system("mode con cols=110")
+
+# Check if avgBal's need to be generated for the month
+scripts.avgBalPop()
 
 while True:
     print("Welcome to the Laser key inventory manangement tool! :D")
