@@ -19,10 +19,3 @@ with stats, and a tool to determine which keys need to be re-ordered soon.
 The *keyInventoryScripts* folder contains all they python scripts the app needs to run.
 *utility.py* contains simple things like shortcuts to print dividing lines, etc.
 *scripts.py* contains all the scripts that communicate with the database.
-
-### Author
-Steven Alexander Jones
-"I couldn't have done it without my homie, google."
-
-### License
-This project is licensed under the GNU General Public License v.3 - see *LICENSE.md* file for details.
