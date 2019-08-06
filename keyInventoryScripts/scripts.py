@@ -309,7 +309,6 @@ def lowStockCheck():
     (
     SELECT keyNum, keysUsed, CONVERT(CHAR(7),submit_time,120) Dates
     FROM ordersFilled x
-    WHERE CONVERT(CHAR(7),submit_time,120) != CONVERT(CHAR(7),GETDATE(),120) AND orderNum != 'avgBal'
     GROUP BY keyNum, submit_time, keysUsed
     ),
     t2 AS
@@ -336,11 +335,41 @@ def lowStockCheck():
     FROM ordersFilled
     WHERE orderNum != 'avgBal'
     GROUP BY keyNum
+    ),
+    t6 AS
+    (
+    SELECT keyNum, keysUsed, COUNT(keysUsed) countVal
+    FROM ordersFilled
+    WHERE orderNum != 'avgBal'
+    GROUP BY keyNum, keysUsed
+    ),
+    t7 AS
+    (
+    SELECT keyNum, MAX(countVal) maxCountVal
+    FROM t6
+    GROUP BY keyNum
+    ),
+    t8 AS
+    (
+    SELECT x.keyNum, y.keysUsed
+    FROM t6 y, t7 x
+    WHERE countVal = maxCountVal AND x.keyNum = y.keyNum
+    ),
+    t9 AS
+    (
+    SELECT keyNum, commonOrderSize
+    FROM
+    (
+    select keyNum, max(keysUsed) commonOrderSize
+    FROM t8
+    GROUP BY keyNum
+    ) a
+    GROUP BY keyNum, commonOrderSize
     )
-    SELECT x.keyNum, x.invCount, y.avgUsedPerMonth, z.lastSubmission
-    FROM t4 x, t3 y, t5 z
-    WHERE x.keyNum = y.keyNum AND x.keyNum = z.keyNum AND x.invCount <= (y.avgUsedPerMonth + 50)
-    GROUP BY x.keyNum, x.invCount, y.avgUsedPerMonth, z.lastSubmission;
+    SELECT x.keyNum, x.invCount, a.commonOrderSize, y.avgUsedPerMonth, z.lastSubmission
+    FROM t4 x, t3 y, t5 z, t9 a
+    WHERE x.keyNum = y.keyNum AND x.keyNum = z.keyNum AND x.keyNum = a.keynum AND x.invCount <= (a.commonOrderSize * 2)
+    GROUP BY x.keyNum, x.invCount, a.commonOrderSize, y.avgUsedPerMonth, z.lastSubmission;
     '''
 
     try:
@@ -354,7 +383,7 @@ def lowStockCheck():
         c1.execute(modeQuery)
         results = c1.fetchall()
         clear()
-        print(tabulate(results, headers=['Key #', 'Inventory ct.', 'Avg. per month', 'Date last lased'], tablefmt='psql'))
+        print(tabulate(results, headers=['Key #', 'Inventory ct.', 'Common Order Size', 'Avg. per month', 'Date last lased'], tablefmt='psql'))
         input("Press enter to return to previous menu...")
         db.close()
         clear()
