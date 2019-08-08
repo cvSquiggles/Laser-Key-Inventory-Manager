@@ -360,7 +360,7 @@ def lowStockCheck():
     SELECT keyNum, commonOrderSize
     FROM
     (
-    select keyNum, max(keysUsed) commonOrderSize
+    SELECT keyNum, max(keysUsed) commonOrderSize
     FROM t8
     GROUP BY keyNum
     ) a
