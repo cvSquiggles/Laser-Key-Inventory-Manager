@@ -309,6 +309,7 @@ def lowStockCheck():
     (
     SELECT keyNum, keysUsed, CONVERT(CHAR(7),submit_time,120) Dates
     FROM ordersFilled x
+    WHERE CONVERT(CHAR(7),submit_time,120) != CONVERT(CHAR(7),GETDATE(),120)
     GROUP BY keyNum, submit_time, keysUsed
     ),
     t2 AS
