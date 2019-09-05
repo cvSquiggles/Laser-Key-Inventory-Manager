@@ -319,7 +319,7 @@ def lowStockCheck():
     ),
     t3 AS
     (
-    SELECT keyNum, AVG(keysUsed) AvgUsedPerMonth
+    SELECT keyNum, AVG(keysUsed) avgUsedPerMonth
     FROM t2
     GROUP BY keyNum
     ),
@@ -368,7 +368,7 @@ def lowStockCheck():
     )
     SELECT x.keyNum, x.invCount, a.commonOrderSize, y.avgUsedPerMonth, z.lastSubmission
     FROM t4 x, t3 y, t5 z, t9 a
-    WHERE x.keyNum = y.keyNum AND x.keyNum = z.keyNum AND x.keyNum = a.keynum AND x.invCount <= (a.commonOrderSize * 2)
+    WHERE x.keyNum = y.keyNum AND x.keyNum = z.keyNum AND x.keyNum = a.keynum AND x.invCount <= (a.commonOrderSize * 3)
     GROUP BY x.keyNum, x.invCount, a.commonOrderSize, y.avgUsedPerMonth, z.lastSubmission;
     '''
 
