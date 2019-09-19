@@ -19,3 +19,6 @@ with stats, and a tool to determine which keys need to be re-ordered soon.
 The *keyInventoryScripts* folder contains all they python scripts the app needs to run.
 *utility.py* contains simple things like shortcuts to print dividing lines, etc.
 *scripts.py* contains all the scripts that communicate with the database.
+
+
+### Developed by Steven A. Jones for Depco Products
